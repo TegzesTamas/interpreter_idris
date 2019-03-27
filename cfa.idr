@@ -1,18 +1,18 @@
 module cfa
 
-export
+public export
 data Variable : Type -> Type
   where
     IntVar : (name : String) -> Variable Integer
     BoolVar : (name : String) -> Variable Bool
 
-export
+public export
 data Const : (ty : Type) -> Type
   where
     IntConst : (x : Integer) -> Const Integer
     BoolConst : (b : Bool) -> Const Bool
 
-export
+public export
 data Expr : Type -> Type
   where
     ConstExpr : Const type -> Expr type
@@ -30,20 +30,20 @@ data Expr : Type -> Type
     ImplExpr : Expr Bool -> Expr Bool -> Expr Bool
     IffExpr : Expr Bool -> Expr Bool -> Expr Bool
 
-export
+public export
 data Action = Assign (Variable type) (Expr type)
   | Assume (Expr Bool)
   | Noop
 
-export
+public export
 data Node = SimpleNode String (List (Action, Node))
             | ErrorNode
 
 
-export
+public export
 data CFA = SimpleCfa Node
 
-export
+public export
 traverse : Node -> IO ()
 traverse (SimpleNode x []) = putStrLn (x ++ " completed")
 traverse (SimpleNode x ((a,n) :: xs)) =
@@ -53,25 +53,6 @@ traverse ErrorNode = putStrLn "Reachable"
 
 
 
-export
+public export
 traverseCfa : CFA -> IO ()
 traverseCfa (SimpleCfa start) = traverse start
-
--- example
-errorNode : Node
-errorNode = ErrorNode
-
-node1 : Node
-node1 = SimpleNode "1" [(Noop, errorNode)]
-
-node2 : Node
-node2 = SimpleNode "2" [(Noop, errorNode)]
-
-node3 : Node
-node3 = SimpleNode "3" []
-
-node4 : Node
-node4 = SimpleNode "4" [(Noop, node3), (Noop, node2)]
-
-startNode : Node
-startNode = SimpleNode "Start" [(Noop, node2), (Noop, node4)]
