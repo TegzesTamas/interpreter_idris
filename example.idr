@@ -1,5 +1,6 @@
 module example
 import cfa
+import language
 
 
 errorNode : Node
@@ -19,3 +20,15 @@ node4 = SimpleNode "4" [(Noop, node3), (Noop, node2)]
 
 startNode : Node
 startNode = SimpleNode "Start" [(Noop, node2), (Noop, node4)]
+
+
+program : Instruction
+program = Seq
+  (Assign "x" (IntLiteral 12))
+  (While
+    (LessThan (IntVar "x") (IntLiteral 20))
+    (Assign "x" (Plus
+      (IntVar "x")
+      (IntLiteral 1)
+    ))
+  )

@@ -1,9 +1,9 @@
-module Interpreter.Language
+module language
 
 public export
 data IntExpr = IntLiteral Integer
   | IntVar String
-  | IntSum IntExpr IntExpr
+  | Plus IntExpr IntExpr
 
 public export
 data BoolExpr = LessThan IntExpr IntExpr
