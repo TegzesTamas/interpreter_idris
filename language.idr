@@ -3,7 +3,7 @@ module language
 %access public export
 
 
-data IntExpr = IntLiteral Integer
+data IntExpr = IntLiteral Nat
   | IntVar String
   | Plus IntExpr IntExpr
 
@@ -17,14 +17,14 @@ data Instruction =
   | While BoolExpr Instruction
 
 
-evalInt : (String -> Integer) -> IntExpr -> Integer
+evalInt : (String -> Nat) -> IntExpr -> Nat
 evalInt valueOf (IntLiteral val) = val
 evalInt valueOf (IntVar name) = valueOf name
 evalInt valueOf (Plus lhs rhs) = (evalInt valueOf lhs) + (evalInt valueOf rhs)
 
 
-evalBool : (valueOf : String -> Integer) -> (expr : BoolExpr) -> Bool
-evalBool valueOf (LessThan x y) = (evalInt valueOf x) < (evalInt valueOf y)
+evalBool : (valueOf : String -> Nat) -> (expr : BoolExpr) -> Type
+evalBool valueOf (LessThan x y) = LT (evalInt valueOf x) (evalInt valueOf y)
 
 
 data Assertion =
@@ -36,9 +36,9 @@ data Assertion =
   | FalseAssert
 
 
-evalAssert: (String -> (List Integer) -> Type) -> (String -> Integer) -> Assertion -> Type
+evalAssert: (String -> (List Nat) -> Type) -> (String -> Nat) -> Assertion -> Type
 evalAssert valueOfPred valueOfInt (PredAssert predName params) = valueOfPred predName (map (evalInt valueOfInt) params)
-evalAssert valueOfPred valueOfInt (BoolAssert expr)   = (evalBool valueOfInt expr = True)
+evalAssert valueOfPred valueOfInt (BoolAssert expr)   = (evalBool valueOfInt expr)
 evalAssert valueOfPred valueOfInt (AndAssert x y)     = (evalAssert valueOfPred valueOfInt x, evalAssert valueOfPred valueOfInt y)
 evalAssert valueOfPred valueOfInt (NotAssert x)       = Not (evalAssert valueOfPred valueOfInt x)
 evalAssert valueOfPred valueOfInt TrueAssert          = ()
@@ -87,13 +87,13 @@ verificationCondition (A_While expr invariant body) post = (Implies (AndAssert (
                                                             (Implies(AndAssert (NotAssert (BoolAssert expr)) invariant) post)::
                                                             verificationCondition body invariant
 
-valid : (predValue : String -> List Integer -> Type) -> (conditions : List Implication) -> Type
+valid : (predValue : String -> List Nat -> Type) -> (conditions : List Implication) -> Type
 valid predValue [] = ()
 valid predValue ((Implies x y) :: xs) =
-  ((map : String->Integer) -> (evalAssert predValue map x) -> (evalAssert predValue map y),
+  ((map : String->Nat) -> (evalAssert predValue map x) -> (evalAssert predValue map y),
   valid predValue xs)
 
-simplePredVal : String -> List Integer -> Type
+simplePredVal : String -> List Nat -> Type
 simplePredVal x xs = ()
 
 a : Assertion
