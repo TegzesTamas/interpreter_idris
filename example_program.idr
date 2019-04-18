@@ -33,17 +33,10 @@ proofReq = (simpleProof, ())
 
 
 plusCommutativeLTRight : {a : Nat} -> {b : Nat} -> {x : Nat} -> LT x (a+b) -> LT x (b+a)
-plusCommutativeLTRight {a} {b} {x} prf = replace (plusCommutative a b) prf
-
-ltImpliesGT : LT a b -> GT b a
-ltImpliesGT x = x
-
-
-gtImpliesLT : GT a b -> LT b a
-gtImpliesLT x = x
+plusCommutativeLTRight {a} {b} {x} prf = rewrite (plusCommutative b a) in prf
 
 plusCommutativeLTLeft : LT (a+b) x -> LT (b+a) x
-plusCommutativeLTLeft {a} {b} {x} prf = gtImpliesLT (replace (plusCommutative a b) (ltImpliesGT prf))
+plusCommutativeLTLeft {a} {b} {x} prf = rewrite (plusCommutative b a) in prf
 
 compProof : (map : String -> Nat) -> LT (map varName) 3 -> LT ((map varName) + 1) 4
 compProof map prf = plusCommutativeLTLeft(LTESucc prf)
