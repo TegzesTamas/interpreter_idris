@@ -27,13 +27,13 @@ while = A_While (LessThan jexpr iexpr) (BoolAssert (LessThan jexpr iexpr)) (A_Se
 
 
 doubleLte : {a : Nat} -> {b : Nat} -> (LTE a b) -> (LTE (a+a) (b+b))
-doubleLte {a = Z} {b = b} LTEZero = LTEZero
 doubleLte {a = (S _)} {b = Z} _ impossible
-doubleLte {a = (S k)} {b = (S j)} (LTESucc x) = LTESucc (rewrite (plusCommutative k (S k)) in (rewrite (plusCommutative j (S j)) in ((LTESucc (doubleLte x)))))
+doubleLte {a = Z} {b = b} LTEZero = LTEZero
+doubleLte {a = (S i)} {b = (S j)} (LTESucc x) = LTESucc (rewrite (plusCommutative j (S j)) in (rewrite (plusCommutative i (S i)) in ((LTESucc (doubleLte x)))))
 
-doubleLt : {a : Nat} -> {b : Nat} -> (LTE (S a) b) -> (LTE (S (a+a)) (b+b))
+doubleLt : {a : Nat} -> {b : Nat} -> (LT a b) -> (LT (a+a) (b+b))
 doubleLt {a = _} {b = Z} _ impossible
-doubleLt {a = Z} {b = (S j)} _ = LTESucc LTEZero
+doubleLt {a = Z} {b = (S _)} _ = LTESucc LTEZero
 doubleLt {a = (S i)} {b = (S j)} (LTESucc x) = LTESucc (rewrite (plusCommutative j (S j)) in (rewrite (plusCommutative i (S i)) in (LTESucc (doubleLt x))))
 
 invariantProof : (map : String -> Nat) -> (LTE (S (map "j")) (map "i"), LTE (S (map "j")) (map "i")) -> LTE (S (plus (map "j") (map "j"))) (plus (map "i") (map "i"))
