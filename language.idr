@@ -83,7 +83,7 @@ verificationCondition : (inst : AnnotatedInst) -> (post : Assertion) -> List Imp
 verificationCondition (Pre pre i) post = (Implies pre (precondition i post))::(verificationCondition i post)
 verificationCondition (A_Assign _ _) _ = []
 verificationCondition (A_Seq x y) post = (verificationCondition x post) ++ (verificationCondition y post)
-verificationCondition (A_While expr invariant body) post = (Implies (AndAssert (BoolAssert expr) invariant) invariant) ::
+verificationCondition (A_While expr invariant body) post = (Implies (AndAssert (BoolAssert expr) invariant) (precondition body invariant)) ::
                                                             (Implies(AndAssert (NotAssert (BoolAssert expr)) invariant) post)::
                                                             verificationCondition body invariant
 
