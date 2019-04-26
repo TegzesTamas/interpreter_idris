@@ -12,8 +12,10 @@ data IntExpr =
 
 
 data BoolExpr =
-  LessThan IntExpr IntExpr
+  Equals IntExpr IntExpr
+  | LessThan IntExpr IntExpr
   | Divides IntExpr IntExpr
+  | Neg BoolExpr
 
 
 data Instruction =
@@ -34,6 +36,8 @@ evalInt valueOf (Times lhs rhs) = (evalInt valueOf lhs) * (evalInt valueOf rhs)
 evalBool : (valueOf : String -> Nat) -> (expr : BoolExpr) -> Type
 evalBool valueOf (LessThan x y) = LT (evalInt valueOf x) (evalInt valueOf y)
 evalBool valueOf (Divides x y) = (k : Nat ** (k * (evalInt valueOf x) = (evalInt valueOf y)))
+evalBool valueOf (Equals x y) = (evalInt valueOf x) = (evalInt valueOf y)
+evalBool valueOf (Neg e) = Not (evalBool valueOf e)
 
 
 data Assertion =
@@ -77,6 +81,8 @@ intSubst varName replacement (IntVar x) with (decEq x varName)
 boolSubst : (varName : String) -> (replacement : IntExpr) -> (expr : BoolExpr) -> BoolExpr
 boolSubst varName replacement (LessThan x y) = LessThan (intSubst varName replacement x) (intSubst varName replacement y)
 boolSubst varName replacement (Divides x y) = Divides (intSubst varName replacement x) (intSubst varName replacement y)
+boolSubst varName replacement (Equals x y) = Equals (intSubst varName replacement x) (intSubst varName replacement y)
+boolSubst varName replacement (Neg e) = Neg (boolSubst varName replacement e)
 
 subst : (varName : String) -> (replacement : IntExpr) -> (assert : Assertion) -> Assertion
 subst varName replacement (PredAssert predName predParams) = PredAssert predName (map (intSubst varName replacement) predParams)
