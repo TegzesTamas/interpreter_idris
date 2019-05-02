@@ -51,7 +51,7 @@ whileBody : AnnotatedInst
 whileBody = A_If bLessThanA aMinusEqB bMinusEqA
 
 invariant : Assertion
-invariant = ?invar
+invariant = GCDEQ xExpr yExpr aExpr bExpr
 
 while : AnnotatedInst
 while = A_While aNotEqB invariant whileBody
@@ -59,5 +59,9 @@ while = A_While aNotEqB invariant whileBody
 postCondition : Assertion
 postCondition = AndAssert (BoolAssert (Divides aExpr yExpr)) (BoolAssert (Divides aExpr xExpr))
 
+program : AnnotatedInst
+program = A_Seq (A_Seq aEqX bEqY) while
 
-euclideanProof : valid language.simplePredVal (verificationCondition program euclidean.postCondition)
+
+euclideanProof : valid language.simplePredVal (verificationCondition euclidean.program euclidean.postCondition)
+euclideanProof = (?euclideanProof_rhs1, ?euclideanProof_rhs2, ())
