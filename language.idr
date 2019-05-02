@@ -33,9 +33,16 @@ evalInt valueOf (Minus lhs rhs) = minus (evalInt valueOf lhs) (evalInt valueOf r
 evalInt valueOf (Times lhs rhs) = (evalInt valueOf lhs) * (evalInt valueOf rhs)
 
 
+divides : Nat -> Nat -> Type
+divides x y = (k : Nat ** (k * x = y))
+
+greatestCommonDivider : Nat -> Nat -> Nat -> Type
+greatestCommonDivider x y d = ((divides d x), (divides d y),
+  {largestDiv : Nat} -> (((LT d largestDiv),(divides largestDiv x), (divides largestDiv y))) -> Void)
+
 evalBool : (valueOf : String -> Nat) -> (expr : BoolExpr) -> Type
 evalBool valueOf (LessThan x y) = LT (evalInt valueOf x) (evalInt valueOf y)
-evalBool valueOf (Divides x y) = (k : Nat ** (k * (evalInt valueOf x) = (evalInt valueOf y)))
+evalBool valueOf (Divides x y) = divides (evalInt valueOf x) (evalInt valueOf y)
 evalBool valueOf (Equals x y) = (evalInt valueOf x) = (evalInt valueOf y)
 evalBool valueOf (Neg e) = Not (evalBool valueOf e)
 
@@ -48,6 +55,7 @@ data Assertion =
   | NotAssert Assertion
   | TrueAssert
   | FalseAssert
+  | GCDEQ IntExpr IntExpr IntExpr IntExpr
 
 
 evalAssert: (String -> (List Nat) -> Type) -> (String -> Nat) -> Assertion -> Type
@@ -58,7 +66,16 @@ evalAssert valueOfPred valueOfInt (OrAssert x y)      = Either (evalAssert value
 evalAssert valueOfPred valueOfInt (NotAssert x)       = Not (evalAssert valueOfPred valueOfInt x)
 evalAssert valueOfPred valueOfInt TrueAssert          = ()
 evalAssert valueOfPred valueOfInt FalseAssert         = Void
-
+evalAssert valueOfPred valueOfInt (GCDEQ xExpr yExpr aExpr bExpr)
+  = (gcd : Nat ** ((greatestCommonDivider x y gcd), (greatestCommonDivider a b gcd))) where
+    x : Nat
+    x = evalInt valueOfInt xExpr
+    y : Nat
+    y = evalInt valueOfInt yExpr
+    a : Nat
+    a = evalInt valueOfInt aExpr
+    b : Nat
+    b = evalInt valueOfInt bExpr
 
 data AnnotatedInst =
   Pre Assertion AnnotatedInst
@@ -92,6 +109,9 @@ subst varName replacement (OrAssert x y) = OrAssert (subst varName replacement x
 subst varName replacement (NotAssert x) = NotAssert (subst varName replacement x)
 subst varName replacement TrueAssert = TrueAssert
 subst varName replacement FalseAssert = FalseAssert
+subst varName replacement (GCDEQ x y a b) = GCDEQ (sHelper x) (sHelper y) (sHelper a) (sHelper b) where
+  sHelper : IntExpr -> IntExpr
+  sHelper = intSubst varName replacement
 
 precondition : (instr : AnnotatedInst) -> (post : Assertion) -> Assertion
 precondition (Pre pre i) post = pre
