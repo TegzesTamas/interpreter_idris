@@ -38,7 +38,7 @@ divides x y = (k : Nat ** (k * x = y))
 
 greatestCommonDivider : Nat -> Nat -> Nat -> Type
 greatestCommonDivider x y d = ((divides d x), (divides d y),
-  {largestDiv : Nat} -> (((LT d largestDiv),(divides largestDiv x), (divides largestDiv y))) -> Void)
+  {largerDiv : Nat} -> (((LT d largerDiv),(divides largerDiv x), (divides largerDiv y))) -> Void)
 
 evalBool : (valueOf : String -> Nat) -> (expr : BoolExpr) -> Type
 evalBool valueOf (LessThan x y) = LT (evalInt valueOf x) (evalInt valueOf y)
@@ -67,7 +67,7 @@ evalAssert valueOfPred valueOfInt (NotAssert x)       = Not (evalAssert valueOfP
 evalAssert valueOfPred valueOfInt TrueAssert          = ()
 evalAssert valueOfPred valueOfInt FalseAssert         = Void
 evalAssert valueOfPred valueOfInt (GCDEQ xExpr yExpr aExpr bExpr)
-  = (gcd : Nat ** ((greatestCommonDivider x y gcd), (greatestCommonDivider a b gcd))) where
+  = (_gcd : Nat ** ((greatestCommonDivider x y _gcd), (greatestCommonDivider a b _gcd))) where
     x : Nat
     x = evalInt valueOfInt xExpr
     y : Nat
