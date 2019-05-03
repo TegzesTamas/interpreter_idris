@@ -41,3 +41,7 @@ doubleLt : {a : Nat} -> {b : Nat} -> (LT a b) -> (LT (a+a) (b+b))
 doubleLt {a = _} {b = Z} _ impossible
 doubleLt {a = Z} {b = (S _)} _ = LTESucc LTEZero
 doubleLt {a = (S i)} {b = (S j)} (LTESucc x) = LTESucc (rewrite (plusCommutative j (S j)) in (rewrite (plusCommutative i (S i)) in (LTESucc (doubleLt x))))
+
+
+multMinus : (mult ac d = a) -> (mult bc d = b) -> (mult (minus ac bc) d = (minus a b))
+multMinus aDib bDiv = ?multMinus_rhs
