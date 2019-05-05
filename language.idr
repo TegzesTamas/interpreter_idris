@@ -121,7 +121,7 @@ precondition (A_While expr invariant body) post = invariant
 precondition (A_If cond iThen iElse) post =
   OrAssert
     (AndAssert (BoolAssert cond) (precondition iThen post))
-    (AndAssert (NotAssert (BoolAssert cond)) ((precondition iThen post)))
+    (AndAssert (NotAssert (BoolAssert cond)) ((precondition iElse post)))
 
 data Implication = Implies Assertion Assertion
 
