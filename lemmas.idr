@@ -57,3 +57,15 @@ plusMinusEqLeft bLTa {a=(S k)} {b=(S j)} =
 
 plusMinusEqRight: (aLTEb : (LTE a b)) -> plus a (minus b a) = b
 plusMinusEqRight {a=a}{b=b} aLTb = rewrite (plusCommutative a (minus b a)) in (plusMinusEqLeft aLTb)
+
+succInjectiveNotEq : (((S k) = (S j)) -> Void) -> (k = j) -> Void
+succInjectiveNotEq {k=k}{j=j} contra prf = contra (eqSucc k j prf)
+
+notEqSucc : ((k = j) -> Void) -> ((S k) = (S j)) -> Void
+notEqSucc {k=k}{j=j} contra prf = contra (succInjective k j prf)
+
+notNotEq: {a:Nat} -> {b:Nat} -> Not (Not (a=b)) -> a=b
+notNotEq {a=Z} {b=Z} x = Refl
+notNotEq {a=(S k)} {b=Z} x = void (x (SIsNotZ))
+notNotEq {a=Z} {b=(S k)} x = void (x (negEqSym SIsNotZ))
+notNotEq {a=(S k)}{b=(S j)} x = eqSucc k j (notNotEq (\contra => (x (notEqSucc contra))))
