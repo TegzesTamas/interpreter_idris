@@ -42,6 +42,12 @@ doubleLt {a = _} {b = Z} _ impossible
 doubleLt {a = Z} {b = (S _)} _ = LTESucc LTEZero
 doubleLt {a = (S i)} {b = (S j)} (LTESucc x) = LTESucc (rewrite (plusCommutative j (S j)) in (rewrite (plusCommutative i (S i)) in (LTESucc (doubleLt x))))
 
+ltImpliesNotEq: {a : Nat} -> {b : Nat} -> (LT a b) -> (a = b) -> Void
+ltImpliesNotEq {a=Z}{b=Z} aLTb aEqb = void (succNotLTEzero aLTb)
+ltImpliesNotEq {a=Z}{b=(S k)} aLTb aEqb = void (SIsNotZ (sym aEqb))
+ltImpliesNotEq {a=(S k)}{b=Z} aLTb aEqb = void (SIsNotZ aEqb)
+ltImpliesNotEq {a=(S k)}{b=(S j)} aLTb aEqb = ltImpliesNotEq (fromLteSucc aLTb) (succInjective k j aEqb)
+
 
 multMinus : (mult ac d = a) -> (mult bc d = b) -> (mult (minus ac bc) d = (minus a b))
 multMinus {ac=ac} {d=d} {a=a} {bc=bc} {b=b} aDiv bDiv = rewrite (multDistributesOverMinusLeft ac bc d) in (rewrite aDiv in (rewrite bDiv in Refl))
@@ -69,3 +75,8 @@ notNotEq {a=Z} {b=Z} x = Refl
 notNotEq {a=(S k)} {b=Z} x = void (x (SIsNotZ))
 notNotEq {a=Z} {b=(S k)} x = void (x (negEqSym SIsNotZ))
 notNotEq {a=(S k)}{b=(S j)} x = eqSucc k j (notNotEq (\contra => (x (notEqSucc contra))))
+
+multipleLarger: {a: Nat} -> {b : Nat} -> {x : Nat} -> (LT (S a) b) -> (mult x b = (S a)) -> Void
+multipleLarger {a=a} {b=Z} {x=x} aSLTb prf = void (succNotLTEzero aSLTb)
+multipleLarger {a=a} {b=b} {x=Z} _ prf = void (SIsNotZ (sym prf))
+multipleLarger {a=a} {b=b} {x=(S k)} aSLTb prf = ltImpliesNotEq (ltePlusRight aSLTb) (sym prf)
