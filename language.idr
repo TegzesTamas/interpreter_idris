@@ -56,6 +56,7 @@ data Assertion =
   | TrueAssert
   | FalseAssert
   | GCDEQ IntExpr IntExpr IntExpr IntExpr
+  | GCD IntExpr IntExpr IntExpr
 
 
 evalAssert: (String -> (List Nat) -> Type) -> (String -> Nat) -> Assertion -> Type
@@ -76,6 +77,14 @@ evalAssert valueOfPred valueOfInt (GCDEQ xExpr yExpr aExpr bExpr)
     a = evalInt valueOfInt aExpr
     b : Nat
     b = evalInt valueOfInt bExpr
+evalAssert valueOfPred valueOfInt (GCD xExpr yExpr gcdExpr)
+  = (greatestCommonDivider x y _gcd) where
+    x : Nat
+    x = evalInt valueOfInt xExpr
+    y : Nat
+    y = evalInt valueOfInt yExpr
+    _gcd : Nat
+    _gcd = evalInt valueOfInt gcdExpr
 
 data AnnotatedInst =
   Pre Assertion AnnotatedInst
@@ -110,6 +119,9 @@ subst varName replacement (NotAssert x) = NotAssert (subst varName replacement x
 subst varName replacement TrueAssert = TrueAssert
 subst varName replacement FalseAssert = FalseAssert
 subst varName replacement (GCDEQ x y a b) = GCDEQ (sHelper x) (sHelper y) (sHelper a) (sHelper b) where
+  sHelper : IntExpr -> IntExpr
+  sHelper = intSubst varName replacement
+subst varName replacement (GCD x y _gcd) = GCD (sHelper x) (sHelper y) (sHelper _gcd) where
   sHelper : IntExpr -> IntExpr
   sHelper = intSubst varName replacement
 
