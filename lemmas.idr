@@ -46,10 +46,14 @@ doubleLt {a = (S i)} {b = (S j)} (LTESucc x) = LTESucc (rewrite (plusCommutative
 multMinus : (mult ac d = a) -> (mult bc d = b) -> (mult (minus ac bc) d = (minus a b))
 multMinus {ac=ac} {d=d} {a=a} {bc=bc} {b=b} aDiv bDiv = rewrite (multDistributesOverMinusLeft ac bc d) in (rewrite aDiv in (rewrite bDiv in Refl))
 
-plusMinusEq: (bLTa : (LT b a)) -> plus (minus a b) b = a
-plusMinusEq bLTa {a=Z} impossible
-plusMinusEq bLTa {a=(S k)} {b=Z} = rewrite (plusCommutative k Z) in Refl
-plusMinusEq bLTa {a=(S k)} {b=(S j)} =
+plusMinusEqLeft: (bLTEa : (LTE b a)) -> plus (minus a b) b = a
+plusMinusEqLeft bLTa {a=Z} {b=Z} = Refl
+plusMinusEqLeft bLTa {a=Z} {b=(S j)} impossible
+plusMinusEqLeft bLTa {a=(S k)} {b=Z} = rewrite (plusCommutative k Z) in Refl
+plusMinusEqLeft bLTa {a=(S k)} {b=(S j)} =
   rewrite (plusCommutative (minus k j) (S j)) in
-    (rewrite (plusCommutative j (minus k j)) in 
-      (rewrite (plusMinusEq {a=k}{b=j} (fromLteSucc bLTa)) in Refl))
+    (rewrite (plusCommutative j (minus k j)) in
+      (rewrite (plusMinusEqLeft {a=k}{b=j} (fromLteSucc bLTa)) in Refl))
+
+plusMinusEqRight: (aLTEb : (LTE a b)) -> plus a (minus b a) = b
+plusMinusEqRight {a=a}{b=b} aLTb = rewrite (plusCommutative a (minus b a)) in (plusMinusEqLeft aLTb)
