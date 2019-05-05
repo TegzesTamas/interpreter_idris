@@ -68,11 +68,11 @@ gcdUnchangedLeftMinus (div ** ((xDiv, yDiv, xyNoLargerDiv),((aC ** aDiv), (bC **
 invariantProof : {a: Nat} -> {b : Nat} -> {x : Nat} -> {y : Nat}->
   ((a=b -> Void), (_gcd : Nat ** ((greatestCommonDivider x y _gcd), (greatestCommonDivider a b _gcd)))) ->
   Either
-    (prf : (LT b a) ** (_gcd : Nat ** ((greatestCommonDivider x y _gcd), (greatestCommonDivider ((-) a b {smaller=(lteSuccLeft prf)}) b _gcd))))
-    (prf : ((LT b a) -> Void) ** (_gcd : Nat ** ((greatestCommonDivider x y _gcd), (greatestCommonDivider a ((-) b a {smaller=notLTImpliesGTE prf}) _gcd))))
+    ((LT b a), (_gcd : Nat ** ((greatestCommonDivider x y _gcd), (greatestCommonDivider (minus a b) b _gcd))))
+    (((LT b a) -> Void) , (_gcd : Nat ** ((greatestCommonDivider x y _gcd), (greatestCommonDivider a (minus b a) _gcd))))
 invariantProof {a=a}{b=b}{x=x}{y=y} (_, preInvariant) with (isLTE (S b) a)
-  invariantProof (_, preInvariant) | (Yes prf) = Left (prf ** gcdUnchangedLeftMinus {prf=prf} preInvariant)
-  invariantProof (_, preInvariant) | (No contra) = Right (contra ** ?b)
+  invariantProof (_, preInvariant) | (Yes prf) = Left (prf ,gcdUnchangedLeftMinus {prf=prf} preInvariant)
+  invariantProof (_, preInvariant) | (No contra) = Right (contra, ?b)
 
 
 euclideanProof : valid language.simplePredVal (verificationCondition euclidean.program euclidean.postCondition)
