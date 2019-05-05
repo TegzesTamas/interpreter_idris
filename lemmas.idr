@@ -80,3 +80,7 @@ multipleLarger: {a: Nat} -> {b : Nat} -> {x : Nat} -> (LT (S a) b) -> (mult x b 
 multipleLarger {a=a} {b=Z} {x=x} aSLTb prf = void (succNotLTEzero aSLTb)
 multipleLarger {a=a} {b=b} {x=Z} _ prf = void (SIsNotZ (sym prf))
 multipleLarger {a=a} {b=b} {x=(S k)} aSLTb prf = ltImpliesNotEq (ltePlusRight aSLTb) (sym prf)
+
+notSuccImpliesZ : Not(IsSucc a) -> (a=Z)
+notSuccImpliesZ {a=Z} _ = Refl
+notSuccImpliesZ {a=(S k)} x = void (x (ItIsSucc))
