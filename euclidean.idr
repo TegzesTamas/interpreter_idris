@@ -88,5 +88,6 @@ invariantProof {a=a}{b=b}{x=x}{y=y} (_, preInvariant) with (isLTE (S b) a)
   invariantProof (_, preInvariant) | (No contra) = Right (contra, gcdUnchangedRightMinus (notLTImpliesGTE contra) preInvariant)
 
 
+
 euclideanProof : valid language.simplePredVal (verificationCondition euclidean.program euclidean.postCondition)
-euclideanProof = (?xy, ?yz, ())
+euclideanProof = (\map => invariantProof, ?yz, ())
