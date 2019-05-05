@@ -44,4 +44,4 @@ doubleLt {a = (S i)} {b = (S j)} (LTESucc x) = LTESucc (rewrite (plusCommutative
 
 
 multMinus : (mult ac d = a) -> (mult bc d = b) -> (mult (minus ac bc) d = (minus a b))
-multMinus aDib bDiv = ?multMinus_rhs
+multMinus {ac=ac} {d=d} {a=a} {bc=bc} {b=b} aDiv bDiv = rewrite (multDistributesOverMinusLeft ac bc d) in (rewrite aDiv in (rewrite bDiv in Refl))
