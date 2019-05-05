@@ -90,7 +90,7 @@ invariantProof {a=a}{b=b}{x=x}{y=y} (_, preInvariant) with (isLTE (S b) a)
 sameNumberGcdSelf: {a: Nat} -> {b : Nat} -> {gcd : Nat} -> (a=b) -> (greatestCommonDivider a b gcd) -> (gcd=a)
 sameNumberGcdSelf {a=a}{b=b}{gcd=gcd} prf ((ac ** aDiv), (bc ** bDiv), noLargerDiv) with (cmp a gcd)
   sameNumberGcdSelf {a=a}{b=b}{gcd=(a + (S y))} prf ((ac ** aDiv), (bc ** bDiv), noLargerDiv)         | (CmpLT y) with (isItSucc a)
-    sameNumberGcdSelf {a=Z}{b=b}{gcd=((S y))} prf ((ac ** aDiv), (bc ** bDiv), noLargerDiv)           | (CmpLT y)      | (No contra) = void (noLargerDiv ((ltePlusLeft {z=1} lteRefl), (0 ** multZeroLeftZero (S (S (S y)))), (0 ** rewrite (sym prf) in (multZeroLeftZero (S (S (S y)))))))
+    sameNumberGcdSelf {a=a}{b=b}{gcd=(a+(S y))} prf ((ac ** aDiv), (bc ** bDiv), noLargerDiv)         | (CmpLT y)      | (No aIsNotSucc) = void (noLargerDiv ((rewrite (notSuccImpliesZ aIsNotSucc) in lteRefl),(0**(sym (notSuccImpliesZ aIsNotSucc))),(0**(trans (sym (notSuccImpliesZ aIsNotSucc))(prf)))))
     sameNumberGcdSelf {a=(S a)}{b=b}{gcd=((S a)+(S y))} prf ((ac ** aDiv), (bc ** bDiv), noLargerDiv) | (CmpLT y)      | (Yes aIsSucc) = void (multipleLarger {a=a} {b=(plus (S a) (S y))} (rewrite (plusCommutative a (S y)) in (rewrite (plusCommutative y a) in (lteAddRight (S (S a))))) aDiv)
   sameNumberGcdSelf {a=a}{b=b}{gcd=a} prf ((ac ** aDiv), (bc ** bDiv), noLargerDiv)                   | (CmpEQ)  = Refl
   sameNumberGcdSelf {a=(gcd + (S x))}{b=b}{gcd=gcd} prf ((ac ** aDiv), (bc ** bDiv), noLargerDiv)     | (CmpGT x)  = void (noLargerDiv ((ltePlusRight {z=(x)} lteRefl),
