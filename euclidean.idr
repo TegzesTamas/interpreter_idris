@@ -67,7 +67,16 @@ gcdUnchangedLeftMinus : (bLTa : (LT b a)) ->
   -> (_gcd : Nat ** ((greatestCommonDivider x y _gcd), (greatestCommonDivider (minus a b) b _gcd)))
 gcdUnchangedLeftMinus bLTa (div ** ((xDiv, yDiv, xyNoLargerDiv),((aC ** aDiv), (bC ** bDiv), abNoLargerDiv)))
   = (div ** ((xDiv, yDiv, xyNoLargerDiv), ((minus aC bC) ** (multMinus aDiv bDiv)), (bC ** bDiv),
-  (\(ldLTdiv, (mc**mDiv), (lbc**lbDiv)) => abNoLargerDiv (ldLTdiv, ((mc + lbc) ** (rewrite (multDistributesOverPlusLeft mc lbc largerDiv2) in (rewrite mDiv in (rewrite lbDiv in (plusMinusEq bLTa))))), (lbc**lbDiv)))))
+  (\(ldLTdiv, (mc**mDiv), (lbc**lbDiv)) => abNoLargerDiv (ldLTdiv, ((mc + lbc) ** (rewrite (multDistributesOverPlusLeft mc lbc largerDiv2) in (rewrite mDiv in (rewrite lbDiv in (plusMinusEqLeft (lteSuccLeft bLTa)))))), (lbc**lbDiv)))))
+
+
+gcdUnchangedRightMinus : (aLTEb : (LTE a b)) ->
+  (_gcd : Nat ** ((greatestCommonDivider x y _gcd), (greatestCommonDivider a b _gcd)))
+  -> (_gcd : Nat ** ((greatestCommonDivider x y _gcd), (greatestCommonDivider a (minus b a) _gcd)))
+gcdUnchangedRightMinus aLTb (div ** ((xDiv, yDiv, xyNoLargerDiv),((aC ** aDiv), (bC ** bDiv), abNoLargerDiv)))
+  = (div ** ((xDiv, yDiv, xyNoLargerDiv),(aC ** aDiv), ((minus bC aC) ** (multMinus bDiv aDiv)),
+  (\(ldLTdiv, (lac**laDiv), (mc**mDiv)) => abNoLargerDiv (ldLTdiv,(lac**laDiv), ((lac + mc) ** (rewrite (multDistributesOverPlusLeft lac mc largerDiv2) in (rewrite mDiv in (rewrite laDiv in (plusMinusEqRight aLTb)))))))))
+
 
 invariantProof : {a: Nat} -> {b : Nat} -> {x : Nat} -> {y : Nat}->
   ((a=b -> Void), (_gcd : Nat ** ((greatestCommonDivider x y _gcd), (greatestCommonDivider a b _gcd)))) ->
@@ -76,7 +85,7 @@ invariantProof : {a: Nat} -> {b : Nat} -> {x : Nat} -> {y : Nat}->
     (((LT b a) -> Void) , (_gcd : Nat ** ((greatestCommonDivider x y _gcd), (greatestCommonDivider a (minus b a) _gcd))))
 invariantProof {a=a}{b=b}{x=x}{y=y} (_, preInvariant) with (isLTE (S b) a)
   invariantProof (_, preInvariant) | (Yes prf) = Left (prf , gcdUnchangedLeftMinus prf preInvariant)
-  invariantProof (_, preInvariant) | (No contra) = Right (contra, ?b)
+  invariantProof (_, preInvariant) | (No contra) = Right (contra, gcdUnchangedRightMinus (notLTImpliesGTE contra) preInvariant)
 
 
 euclideanProof : valid language.simplePredVal (verificationCondition euclidean.program euclidean.postCondition)
